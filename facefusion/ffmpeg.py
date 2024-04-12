@@ -74,11 +74,11 @@ def restore_audio(target_path : str, output_path : str) -> bool:
 	trim_frame_end = facefusion.globals.trim_frame_end
 	temp_output_video_path = get_temp_output_video_path(target_path)
 	commands = [ '-hwaccel', 'auto', '-i', temp_output_video_path ]
-	if trim_frame_start is not None:
-		start_time = trim_frame_start / fps
-		commands.extend([ '-ss', str(start_time) ])
-	if trim_frame_end is not None:
-		end_time = trim_frame_end / fps
-		commands.extend([ '-to', str(end_time) ])
+	#if trim_frame_start is not None:
+	#	start_time = trim_frame_start / fps
+	#	commands.extend([ '-ss', str(start_time) ])
+	#if trim_frame_end is not None:
+	#	end_time = trim_frame_end / fps
+	#	commands.extend([ '-to', str(end_time) ])
 	commands.extend([ '-i', target_path, '-c', 'copy', '-map', '0:v:0', '-map', '1:a:0', '-shortest', '-y', output_path ])
 	return run_ffmpeg(commands)
