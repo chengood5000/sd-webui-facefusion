@@ -16,6 +16,7 @@ from facefusion.filesystem import list_module_names, is_file
 from facefusion.execution_helper import encode_execution_providers, decode_execution_providers
 from facefusion.processors.frame.core import get_frame_processors_modules
 from facefusion.processors.frame import globals as frame_processors_globals, choices as frame_processors_choices
+from facefusion.vision import detect_fps
 
 class FrameProcessorRequest(BaseModel):
     name: str
@@ -41,8 +42,8 @@ class FrameProcessRequest(BaseModel):
     face_detect_size: str = '640x640'
     skip_download: Optional[bool] = None
     watermark: Optional[bool] = None
-    trim_frame_start : Optional[int] = None
-    trim_frame_end : Optional[int] = None
+    trim_time_start : Optional[int] = None
+    trim_time_end : Optional[int] = None
         
 class FrameProcessResponse(BaseModel):
     output: Optional[str]
@@ -163,9 +164,12 @@ def facefusion_api(_: gr.Blocks, app: FastAPI):
             return (False, 'Unknown face detect size')
         globals.face_detector_size = req.face_detect_size
 
-        if req.trim_frame_start is not None and req.trim_frame_end is not None:
-            globals.trim_frame_start = req.trim_frame_start 
-            globals.trim_frame_end = req.trim_frame_end
+        globals.trim_frame_start = None
+        globals.trim_frame_end = None
+        if req.trim_time_start is not None and req.trim_time_end is not None:
+            fps = detect_fps(globals.target_path)
+            globals.trim_frame_start = req.trim_time_start * fps
+            globals.trim_frame_end = req.trim_time_end * fps
             print(f'trim frames [{globals.trim_frame_start}, {globals.trim_frame_end}]')
         
         globals.skip_download = req.skip_download
