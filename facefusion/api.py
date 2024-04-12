@@ -41,6 +41,8 @@ class FrameProcessRequest(BaseModel):
     face_detect_size: str = '640x640'
     skip_download: Optional[bool] = None
     watermark: Optional[bool] = None
+    trim_frame_start : Optional[int] = None
+    trim_frame_end : Optional[int] = None
         
 class FrameProcessResponse(BaseModel):
     output: Optional[str]
@@ -161,6 +163,11 @@ def facefusion_api(_: gr.Blocks, app: FastAPI):
             return (False, 'Unknown face detect size')
         globals.face_detector_size = req.face_detect_size
 
+        if req.trim_frame_start is not None and req.trim_frame_end is not None:
+            globals.trim_frame_start = req.trim_frame_start 
+            globals.trim_frame_end = req.trim_frame_end
+            print(f'trim frames [{globals.trim_frame_start}, {globals.trim_frame_end}]')
+        
         globals.skip_download = req.skip_download
         globals.watermark = req.watermark
         if len(req.processors) == 0:
